@@ -45,6 +45,7 @@ public class NotesGenerator : MonoBehaviour
             if (i + 1 < musicDatas.Count)
             {
                 float nexttiming = ((int.Parse(musicDatas[i + 1][0]) - int.Parse(musicDatas[i][0])) * measure + int.Parse(musicDatas[i + 1][1]) - int.Parse(musicDatas[i][1])) / 2 / bpm;
+                nexttiming += Beat(bpm) * 3;
                 yield return new WaitForSeconds(nexttiming);
             }
         }
@@ -55,9 +56,9 @@ public class NotesGenerator : MonoBehaviour
         float beat = Beat(bpm);
         float nexttiming = 0;
 
-        StartCoroutine(DelayMusicPlay(Beat(bpm) * 4));
-        nexttiming += Beat(bpm) * 3;
+        StartCoroutine(DelayMusicPlay(Beat(bpm) * 4));       
         nexttiming += ((int.Parse(csvDatas[0][1]) - 1) * measure + int.Parse(csvDatas[0][2])) / 2 / bpm;
+        nexttiming += Beat(bpm) * 3;
 
         mss = gameManager.GetComponent<MainSceneScript>();
         mss.StartCoroutine(mss.GameEnd(musicPlayer.GetComponent<AudioSource>().clip.length + Beat(bpm) * 4));

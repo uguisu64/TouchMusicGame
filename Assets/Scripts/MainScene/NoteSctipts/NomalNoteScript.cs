@@ -17,7 +17,7 @@ public class NomalNoteScript : MonoBehaviour
 
     void Start()
     {
-        speed = 10 / time;
+        speed = 9 / time;
         spriteRendererMN = moveNote.GetComponent<SpriteRenderer>();
         spriteRendererJC = judgeCircle.GetComponent<SpriteRenderer>();
     }

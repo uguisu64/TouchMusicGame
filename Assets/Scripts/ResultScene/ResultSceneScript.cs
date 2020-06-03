@@ -30,7 +30,7 @@ public class ResultSceneScript : MonoBehaviour
         goodText.text = dss.good.ToString();
         badText.text = dss.bad.ToString();
         missText.text = dss.miss.ToString();
-        scoreText.text = dss.score.ToString() + "%";
+        scoreText.text = dss.score.ToString("F2") + "%";
     }
 
     public void NextButton()
