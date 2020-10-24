@@ -34,12 +34,14 @@ public class NomalNoteScript : MonoBehaviour
             moveNote.transform.localPosition = Vector3.zero;
             spriteRendererMN.color -= new Color(0, 0, 0, Time.deltaTime * 5);
             spriteRendererJC.color -= new Color(0, 0, 0, Time.deltaTime * 5);
+
+            //ミスノーツの消去
+            if (time <= -0.2)
+            {
+                gameManager.GetComponent<MainSceneScript>().NoteMiss();
+                Destroy(gameObject);
+            }
         }
-        //ミスノーツの消去
-        if (time <= -0.2)
-        {
-            gameManager.GetComponent<MainSceneScript>().NoteMiss();
-            Destroy(gameObject);
-        }
+        
     }
 }

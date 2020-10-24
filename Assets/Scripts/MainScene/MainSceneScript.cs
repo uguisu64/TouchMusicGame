@@ -53,13 +53,13 @@ public class MainSceneScript : MonoBehaviour
     {
         if (Input.touchCount > 0)
         {
-            for(int i = 0; i < Input.touchCount; i++)
+            for (int i = 0; i < Input.touchCount; i++)
             {
                 Touch touch = Input.GetTouch(i);
                 if (touch.phase == TouchPhase.Began)
                 {
                     RaycastHit2D[] hit2Ds = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(touch.position), Vector2.zero, 10);
-                    
+
                     if (hit2Ds.Length != 0)
                     {
                         RaycastHit2D hit2D = hit2Ds[0];
@@ -77,14 +77,39 @@ public class MainSceneScript : MonoBehaviour
                             AddScore(hit2D.transform.gameObject.GetComponent<NomalNoteScript>().time, hit2D.transform.position);
                             Destroy(hit2D.transform.gameObject);
                         }
+                        else if (hit2D.transform.tag == "HoldNote")
+                        {
+                            hit2D.transform.gameObject.GetComponent<HoldNoteScript>().NoteTouchBegan();
+                        }
                     }
-                    
+                }
+                else if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
+                {
+                    RaycastHit2D[] hit2Ds = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(touch.position), Vector2.zero, 10);
+
+                    if (hit2Ds.Length != 0)
+                    {
+                        RaycastHit2D hit2D = hit2Ds[0];
+
+                        for (int j = 1; j < hit2Ds.Length; j++)
+                        {
+                            if (hit2Ds[j].transform.gameObject.GetComponent<NomalNoteScript>().time < hit2D.transform.gameObject.GetComponent<NomalNoteScript>().time)
+                            {
+                                hit2D = hit2Ds[j];
+                            }
+                        }
+
+                        if (hit2D.transform.tag == "HoldNote")
+                        {
+                            hit2D.transform.gameObject.GetComponent<HoldNoteScript>().NoteTouchHold();
+                        }
+                    }
                 }
             }
         }
     }
 
-    void AddScore(float timing, Vector3 position)
+    public void AddScore(float timing, Vector3 position)
     {
         if (Mathf.Abs(timing) <= 0.06)
         {

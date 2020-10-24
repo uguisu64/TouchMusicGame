@@ -35,9 +35,14 @@ public class NotesGenerator : MonoBehaviour
         nns.gameManager = gameManager;
     }
 
+    void HoldNoteCreate(Vector3 posision, float rotate, float timing, float holdTime)
+    {
+
+    }
+
     public IEnumerator BpmChange()
     {
-        for(int i = 0; i < musicDatas.Count; i++)
+        for (int i = 0; i < musicDatas.Count; i++)
         {
             bpm = float.Parse(musicDatas[i][2]);
             measure = int.Parse(musicDatas[i][3]);
@@ -56,7 +61,7 @@ public class NotesGenerator : MonoBehaviour
         float beat = Beat(bpm);
         float nexttiming = 0;
 
-        StartCoroutine(DelayMusicPlay(Beat(bpm) * 4));       
+        StartCoroutine(DelayMusicPlay(Beat(bpm) * 4));
         nexttiming += ((int.Parse(csvDatas[0][1]) - 1) * measure + int.Parse(csvDatas[0][2])) / 2 / bpm;
         nexttiming += Beat(bpm) * 3;
 
@@ -135,7 +140,7 @@ public class NotesGenerator : MonoBehaviour
         }
     }
 
-    public void MusicScoreRead(string scoreName,string musicDataName)
+    public void MusicScoreRead(string scoreName, string musicDataName)
     {
         csvReader = gameObject.GetComponent<CSVReader>();
         csvDatas = csvReader.CsvRead("CsvFiles/MusicalScores/" + scoreName);
