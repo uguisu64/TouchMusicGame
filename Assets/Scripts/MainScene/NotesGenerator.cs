@@ -6,6 +6,7 @@ public class NotesGenerator : MonoBehaviour
 {
     //ノーツprefab
     public GameObject nomalNote;
+    public GameObject HoldNote;
     public GameObject gameManager;
     public GameObject musicPlayer;
 
@@ -37,7 +38,11 @@ public class NotesGenerator : MonoBehaviour
 
     void HoldNoteCreate(Vector3 posision, float rotate, float timing, float holdTime)
     {
-
+        GameObject note = Instantiate(HoldNote, posision, Quaternion.identity);
+        note.transform.Rotate(new Vector3(0, 0, rotate));
+        HoldNoteScript hns = note.GetComponent<HoldNoteScript>();
+        hns.time = timing;
+        hns.gameManager = gameManager;
     }
 
     public IEnumerator BpmChange()
@@ -54,6 +59,96 @@ public class NotesGenerator : MonoBehaviour
                 yield return new WaitForSeconds(nexttiming);
             }
         }
+    }
+
+    public float TimeBetweenTwoPoint(int forward, int back)
+    {
+        float answer = 0;
+
+        int a = int.Parse(csvDatas[forward][1]);//何小節目か
+        int b = int.Parse(csvDatas[forward][2]);//小節内のどこか
+        int c = int.Parse(csvDatas[back][1]);//何小節目に終わるか
+        int d = int.Parse(csvDatas[back][2]);//小節内のどこで終わるか
+
+        int i;
+        float Bpm = float.Parse(musicDatas[0][2]);
+        int Measure = int.Parse(musicDatas[0][3]);
+
+        for (i = 1; i < musicDatas.Count; i++)
+        {
+            if (a < int.Parse(musicDatas[i][0]) || a == int.Parse(musicDatas[i][0]) && b < int.Parse(musicDatas[i][1]))
+            {
+                break;
+            }
+            Bpm = float.Parse(musicDatas[i][2]);
+            Measure = int.Parse(musicDatas[i][3]);
+        }
+
+        for (; i < musicDatas.Count; i++)
+        {
+            if (int.Parse(musicDatas[i][0]) < c || int.Parse(musicDatas[i][0]) == c && int.Parse(musicDatas[i][1]) < d)
+            {
+                answer += 60 / bpm * ((int.Parse(musicDatas[i][0]) - a) * Measure + int.Parse(musicDatas[i][1]) - b) / 120;
+                a = int.Parse(musicDatas[i][0]);
+                b = int.Parse(musicDatas[i][1]);
+                Bpm = float.Parse(musicDatas[i][2]);
+                Measure = int.Parse(musicDatas[i][3]);
+            }
+            else
+            {
+                answer += 60 / bpm * ((c - a) * Measure + d - b) / 120;
+                return answer;
+            }
+        }
+
+        answer += 60 / bpm * ((a - c) * measure + b - d) / 120;
+
+        return answer;
+    }
+
+    public float HoldTimeBetweenTwoPoint(int n)
+    {
+        float answer = 0;
+
+        int a = int.Parse(csvDatas[n][1]);//何小節目か
+        int b = int.Parse(csvDatas[n][2]);//小節内のどこか
+        int c = int.Parse(csvDatas[n][6]);//何小節目に終わるか
+        int d = int.Parse(csvDatas[n][7]);//小節内のどこで終わるか
+
+        int i;
+        float Bpm = float.Parse(musicDatas[0][2]);
+        int Measure = int.Parse(musicDatas[0][3]);
+
+        for (i = 1; i < musicDatas.Count; i++)
+        {
+            if (a < int.Parse(musicDatas[i][0]) || a == int.Parse(musicDatas[i][0]) && b < int.Parse(musicDatas[i][1]))
+            {
+                break;
+            }
+            Bpm = float.Parse(musicDatas[i][2]);
+            Measure = int.Parse(musicDatas[i][3]);
+        }
+
+        for (; i < musicDatas.Count; i++)
+        {
+            if (int.Parse(musicDatas[i][0]) < c || int.Parse(musicDatas[i][0]) == c && int.Parse(musicDatas[i][1]) < d)
+            {
+                answer += 60 / bpm * ((int.Parse(musicDatas[i][0]) - a) * Measure + int.Parse(musicDatas[i][1]) - b) / 120;
+                a = int.Parse(musicDatas[i][0]);
+                b = int.Parse(musicDatas[i][1]);
+                Bpm = float.Parse(musicDatas[i][2]);
+                Measure = int.Parse(musicDatas[i][3]);
+            }
+            else
+            {
+                answer += 60 / bpm * ((c - a) * Measure + d - b) / 120;
+                return answer;
+            }
+        }
+
+        answer += 60 / bpm * ((a - c) * measure + b - d) / 120;
+
+        return answer;
     }
 
     public IEnumerator MKnote()
@@ -73,7 +168,18 @@ public class NotesGenerator : MonoBehaviour
         for (int i = 0; i < csvDatas.Count; i++)
         {
             Vector3 notePos = new Vector3(float.Parse(csvDatas[i][3]), float.Parse(csvDatas[i][4]), 0);
-            NomalNoteCreate(notePos, float.Parse(csvDatas[i][5]), beat);
+
+            switch (int.Parse(csvDatas[i][0]))
+            {
+                case 0:
+                    NomalNoteCreate(notePos, float.Parse(csvDatas[i][5]), beat);
+                    break;
+
+                case 1:
+                    HoldNoteCreate(notePos, float.Parse(csvDatas[i][5]), beat, HoldTimeBetweenTwoPoint(i));
+                    break;
+            }
+            
             while (i + 1 < csvDatas.Count && csvDatas[i][1] == csvDatas[i + 1][1] && csvDatas[i][2] == csvDatas[i + 1][2])
             {
                 i++;
