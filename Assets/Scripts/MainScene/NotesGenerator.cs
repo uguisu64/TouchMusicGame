@@ -41,6 +41,7 @@ public class NotesGenerator : MonoBehaviour
         GameObject note = Instantiate(HoldNote, posision, Quaternion.identity);
         note.transform.Rotate(new Vector3(0, 0, rotate));
         HoldNoteScript hns = note.GetComponent<HoldNoteScript>();
+        hns.holdTime = holdTime;
         hns.time = timing;
         hns.gameManager = gameManager;
     }

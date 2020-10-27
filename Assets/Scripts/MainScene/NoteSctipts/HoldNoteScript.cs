@@ -43,6 +43,11 @@ public class HoldNoteScript : MonoBehaviour
 
         if (time <= 0)
         {
+            if (touchFlg)
+            {
+                holdGauge.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one / 2, Mathf.Abs(time / holdTime));
+            }
+
             //ノーツの消去
             if (time <= -0.2)
             {
@@ -57,11 +62,6 @@ public class HoldNoteScript : MonoBehaviour
                     Destroy(gameObject);
                 }
                 touchFlg = false;
-            }
-
-            if (touchFlg)
-            {
-                holdGauge.transform.localScale += new Vector3(0.5f / holdTime * Time.deltaTime, 0.5f / holdTime * Time.deltaTime, 1);
             }
 
             moveNote.transform.localPosition = Vector3.zero;
